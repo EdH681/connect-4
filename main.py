@@ -42,6 +42,22 @@ def bottom(column, table):
     return len(table) - 1
 
 
+def horizontal(table):
+    for i in range(len(table)):
+        row = table[i]
+        for j in range(len(row)-3):
+            if row[j] == row[j+1] == row[j+2] == row[j+3] and row[j] != 0:
+                print(f"4 in a row horizontally starting at {j+1}, {6-(i+1)}")
+
+
+def vertical(table):
+    for i in range(len(table)-3):
+        for j in range(len(table[i])):
+            if table[i][j] == table[i+1][j] == table[i+2][j] == table[i+3][j] and table[i][j] != 0:
+                print(f"4 in a row vertically starting at {j+1}, {6-(i+1)}")
+
+
+
 pygame.init()
 win = pygame.display.set_mode((1000, 900))
 font = pygame.font.SysFont("Lucida Sans Typewriter", 30)
@@ -50,9 +66,9 @@ grid = [
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0]
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0]
 ]
 
 running = True
@@ -70,6 +86,8 @@ while running:
     squares((150, 200), 100)
     text = font.render(f"Player {player + 1}", True, "white")
     win.blit(text, (150, 100))
+    horizontal(grid)
+    vertical(grid)
     pygame.display.update()
 
     for event in pygame.event.get():
