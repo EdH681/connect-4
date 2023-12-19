@@ -47,25 +47,25 @@ def checks(table):
     for i in range(len(table)):
         for j in range(len(table[i])-3):
             if table[i][j] == table[i][j+1] == table[i][j+2] == table[i][j+3] and table[i][j] != 0:
-                print(f"4 in a row horizontally starting at {j+1}, {6-(i+1)}")
+                return table[i][j]
 
     # vertical
     for i in range(len(table)-3):
         for j in range(len(table[i])):
             if table[i][j] == table[i+1][j] == table[i+2][j] == table[i+3][j] and table[i][j] != 0:
-                print(f"4 in a row vertically starting at {j+1}, {6-(i+1)}")
+                return table[i][j]
 
     # diagonal down
     for i in range(len(table)-3):
         for j in range(len(table[i])-3):
             if table[i][j] == table[i+1][j+1] == table[i+2][j+2] == table[i+3][j+3] and table[i][j] != 0:
-                print(f"4 in a row diagonally down starting at {j+1}, {6-(i+1)}")
+                return table[i][j]
 
     # diagonal up
     for i in range(2, len(table)):
         for j in range(len(table[i])-3):
             if table[i][j] == table[i-1][j+1] == table[i-2][j+2] == table[i-3][j+3] and table[i][j] != 0:
-                print(f"4 in a row diagonally up starting at {j+1}, {6-(i+1)}")
+                return table[i][j]
 
 
 pygame.init()
@@ -95,12 +95,28 @@ while running:
     counters(grid, (150, 200))
     squares((150, 200), 100)
     text = font.render(f"Player {player + 1}", True, "white")
+
+    if not checks(grid) is None:
+        text = font.render(f"Player {checks(grid)} wins", True, "white")
+        restart = font.render("Press 'r' to restart", True, "white")
+        win.blit(restart, (150, 150))
+        if pygame.key.get_pressed()[pygame.K_r]:
+            grid = [
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0]
+            ]
+            player = 0
+
     win.blit(text, (150, 100))
-    checks(grid)
+
     pygame.display.update()
 
     for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
+        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and checks(grid) is None:
             if grid[0][col-1] == 0:
                 grid[row][col-1] = player + 1
                 player = ((player + 1) % 2)
