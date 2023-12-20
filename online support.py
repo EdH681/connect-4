@@ -47,24 +47,36 @@ def checks(table):
     for i in range(len(table)):
         for j in range(len(table[i])-3):
             if table[i][j] == table[i][j+1] == table[i][j+2] == table[i][j+3] and table[i][j] != 0:
+                start = (200 + (100 * j)), (150 + (100 * (i+1)))
+                end = (100 + (100 * (j + 4))), (150 + (100 * (i + 1)))
+                pygame.draw.line(win, "yellow", start, end, 20)
                 return table[i][j]
 
     # vertical
     for i in range(len(table)-3):
         for j in range(len(table[i])):
             if table[i][j] == table[i+1][j] == table[i+2][j] == table[i+3][j] and table[i][j] != 0:
+                start = (200 + (100 * j)), (150 + (100 * (i+1)))
+                end = (100 + (100 * (j+1))), (150 + (100 * (i + 4)))
+                pygame.draw.line(win, "yellow", start, end, 20)
                 return table[i][j]
 
     # diagonal down
     for i in range(len(table)-3):
         for j in range(len(table[i])-3):
             if table[i][j] == table[i+1][j+1] == table[i+2][j+2] == table[i+3][j+3] and table[i][j] != 0:
+                start = (200 + (100 * j)), (150 + (100 * (i + 1)))
+                end = (100 + (100 * (j + 4))), (150 + (100 * (i + 4)))
+                pygame.draw.line(win, "yellow", start, end, 20)
                 return table[i][j]
 
     # diagonal up
     for i in range(2, len(table)):
         for j in range(len(table[i])-3):
             if table[i][j] == table[i-1][j+1] == table[i-2][j+2] == table[i-3][j+3] and table[i][j] != 0:
+                start = (200 + (100 * j)), (150 + (100 * (i + 1)))
+                end = (100 + (100 * (j + 4))), (150 + (100 * (i - 2)))
+                pygame.draw.line(win, "yellow", start, end, 20)
                 return table[i][j]
 
 
