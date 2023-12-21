@@ -93,45 +93,46 @@ grid = [
     [0, 0, 0, 0, 0, 0, 0]
 ]
 
-running = True
-player = 0
+if __name__ == "__main__":
+    running = True
+    player = 0
 
-while running:
+    while running:
 
-    mouse = pygame.mouse.get_pos()
+        mouse = pygame.mouse.get_pos()
 
-    win.fill("black")
-    col = cursor_to_column(mouse)
-    row = bottom(col, grid)
-    column_marker(col)
-    counters(grid, (150, 200))
-    squares((150, 200), 100)
-    text = font.render(f"Player {player + 1}", True, "white")
+        win.fill("black")
+        col = cursor_to_column(mouse)
+        row = bottom(col, grid)
+        column_marker(col)
+        counters(grid, (150, 200))
+        squares((150, 200), 100)
+        text = font.render(f"Player {player + 1}", True, "white")
 
-    if not checks(grid) is None:
-        text = font.render(f"Player {checks(grid)} wins", True, "white")
-        restart = font.render("Press 'r' to restart", True, "white")
-        win.blit(restart, (150, 150))
-        if pygame.key.get_pressed()[pygame.K_r]:
-            grid = [
-                [0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0]
-            ]
-            player = 0
+        if not checks(grid) is None:
+            text = font.render(f"Player {checks(grid)} wins", True, "white")
+            restart = font.render("Press 'r' to restart", True, "white")
+            win.blit(restart, (150, 150))
+            if pygame.key.get_pressed()[pygame.K_r]:
+                grid = [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0]
+                ]
+                player = 0
 
-    win.blit(text, (150, 100))
+        win.blit(text, (150, 100))
 
-    pygame.display.update()
+        pygame.display.update()
 
-    for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and checks(grid) is None:
-            if grid[0][col-1] == 0:
-                grid[row][col-1] = player + 1
-                player = ((player + 1) % 2)
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and checks(grid) is None:
+                if grid[0][col-1] == 0:
+                    grid[row][col-1] = player + 1
+                    player = ((player + 1) % 2)
 
-        if event.type == pygame.QUIT:
-            running = False
+            if event.type == pygame.QUIT:
+                running = False
