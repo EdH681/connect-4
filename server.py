@@ -67,17 +67,15 @@ def handle_client(conn, addr):
                 players[addr] = f"Player {PLAYERS[0]}"
                 PLAYERS.remove(PLAYERS[0])
 
-            if msg == "g":
-                msg = conn.recv(4096)
-                print(msg)
+            if msg[0] == "g":
+                msg = msg[1:]
+                msg = msg.replace("(", "")
+                msg = msg.replace(")", "")
+                msg.split(",")
+                print(f"Player {players[addr]}: made a move at {msg}")
 
-                #print(f"{players[addr]}: {msg}")
-
-                #for player in players:
-                #    player.send()
-
-
-
+                for player in players:
+                    conn.send(msg.encode(FORMAT))
 
     conn.close()
     print()

@@ -18,9 +18,6 @@ def send(msg):
         print(result)
         return int(result)
 
-def recieve_grid():
-    pass
-
 
 
 '''
@@ -37,7 +34,7 @@ HEADER = 64
 PORT = 8888
 FORMAT = "utf-8"
 DISCONNECT = "!DISCONNECT"
-SERVER = "192.168.1.207"
+SERVER = "192.168.89.1"
 ADDR = (SERVER, PORT)
 
 # initialising connection with server
@@ -86,6 +83,7 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
             if grid[0][col - 1] == 0:
                 grid[row][col - 1] = player
-                send("g"+str(grid))
+                send("g"+str((row, col-1)))
+                #send("MOVE")
         if event.type == pygame.QUIT:
             sys.exit()
