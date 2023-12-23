@@ -2,6 +2,16 @@ import socket
 import sys
 import threading
 
+'''
+Function of the server:
+- Receive the current grid from the player who just played
+- Update the grid stored on the server
+- Check the grid for wins
+- Send the updated grid to both players
+- Send if there was a win + where the win was 
+- Alternate between which player is moving
+'''
+
 # =constants=
 HEADER = 64
 PORT = 8888
@@ -10,6 +20,18 @@ ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT = "!DISCONNECT"
 CLOSE = "!CLOSE"
+PLAYERS = [1, 2]
+
+players = {}
+
+grid = [
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0]
+        ]
 
 try:
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,12 +45,8 @@ except OSError:
     sys.exit()
 
 
-def sorted(enter):
-    enter.sort()
-    return str(enter)
-
-
 def handle_client(conn, addr):
+    global players, grid
     print(f"\nNew connection: {addr}")
     connected = True
     while connected:
@@ -43,12 +61,22 @@ def handle_client(conn, addr):
                 connected = False
                 break
 
-            if msg == CLOSE:
-                print("Server closing...")
-                sys.exit()
+            if msg == "Start" and len(PLAYERS) > 0:
+                conn.send(str(PLAYERS[0]).encode(FORMAT))
+                print(f"{addr} is player {PLAYERS[0]}")
+                players[addr] = f"Player {PLAYERS[0]}"
+                PLAYERS.remove(PLAYERS[0])
 
-            print(f"{addr[0]}: {msg}")
-            conn.send(msg.encode(FORMAT))
+            if msg == "g":
+                msg = conn.recv(4096)
+                print(msg)
+
+                #print(f"{players[addr]}: {msg}")
+
+                #for player in players:
+                #    player.send()
+
+
 
 
     conn.close()
