@@ -20,7 +20,7 @@ ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT = "!DISCONNECT"
 CLOSE = "!CLOSE"
-PLAYERS = [1, 2]
+PLAYERS = ["1", "2"]
 
 players = {}
 
@@ -46,36 +46,30 @@ except OSError:
 
 
 def handle_client(conn, addr):
-    global players, grid
     print(f"\nNew connection: {addr}")
     connected = True
     while connected:
+        msg = conn.recv(4096).decode()
 
-        msg_length = conn.recv(HEADER).decode(FORMAT)
-        if msg_length:
-            msg_length = int(msg_length)
-            msg = conn.recv(msg_length).decode(FORMAT)
-
-            if msg == DISCONNECT:
-                print(f"{addr} disconnected")
-                connected = False
-                break
-
-            if msg == "Start" and len(PLAYERS) > 0:
-                conn.send(str(PLAYERS[0]).encode(FORMAT))
+        if msg == "!start":
+            if len(PLAYERS) > 0:
+                player = PLAYERS[0]
+                players[addr] = PLAYERS[0]
                 print(f"{addr} is player {PLAYERS[0]}")
-                players[addr] = f"Player {PLAYERS[0]}"
                 PLAYERS.remove(PLAYERS[0])
+                conn.send(str.encode(player))
+            else:
+                conn.send(str.encode("_full"))
 
-            if msg[0] == "g":
-                msg = msg[1:]
-                msg = msg.replace("(", "")
-                msg = msg.replace(")", "")
-                msg.split(",")
-                print(f"Player {players[addr]}: made a move at {msg}")
+        elif msg == "!disconnect":
+            conn.send(str.encode("Disconnecting..."))
+            print(f"Player {players[addr]} disconnected")
+            connected = False
+            conn.close()
 
-                for player in players:
-                    conn.send(msg.encode(FORMAT))
+        else:
+            print(f"Player {players[addr]}: {msg}")
+            conn.send(str.encode(f"Received"))
 
     conn.close()
     print()
@@ -90,5 +84,8 @@ def start():
         thread.start()
 
 
+process = threading.Thread(target=start)
+
 print("Server starting...")
-start()
+process.start()
+print("isdfjbhdfj")
