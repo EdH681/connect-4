@@ -7,25 +7,34 @@ Function of connection
 - Make the connection to the server easier to replicate
 - Allows the client to send data to the server in a simpler way
 '''
-class Network:
+
+
+class Player:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "192.168.1.207"
+        self.server = "192.168.1.11"
         self.port = 8888
         self.addr = (self.server, self.port)
         self.id = self.connect()
-        print(f"Player {self.id}")
+        self.grid = [
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0]
+        ]
 
     def connect(self):
         try:
             self.client.connect(self.addr)
-            self.client.send(str.encode("!start"))
-            result = self.client.recv(4096).decode()
-            if result == "_full":
+            self.client.send(str.encode("_start"))
+            res = self.client.recv(4096).decode()
+            if res == "_full":
                 print("Server full")
                 sys.exit()
             else:
-                return result
+                return res
         except Exception as e:
             print(e)
             sys.exit()
@@ -37,12 +46,23 @@ class Network:
         except WindowsError:
             sys.exit()
 
+    def request(self):
+        while True:
+            res = self.send("_request")
+            if res == "_received":
+                move = self.client.recv(4096).decode()
+                if move != "_":
+                    print(move)
+
 
 if __name__ == "__main__":
-    n = Network()
-    thread = threading.Thread(target=n.search())
+    n = Player()
+    thread = threading.Thread(target=n.request)
     thread.start()
     while True:
-        print(n.send(input("> ")))
-
-
+        result = n.send(input("> "))
+        if result == "_disconnected":
+            print("Disconnected")
+            sys.exit()
+        else:
+            print(result)

@@ -1,24 +1,8 @@
-import socket
-import sys
 import pygame
-import threading
 import game
-
-
-def send(msg):
-    message = str(msg).encode(FORMAT)
-    msg_length = len(message)
-    send_length = str(msg_length).encode(FORMAT)
-    send_length += b" " * (HEADER - len(send_length))
-    client.send(send_length)
-    client.send(message)
-
-    if msg == "Start":
-        result = client.recv(2048).decode(FORMAT)
-        print(result)
-        return int(result)
-
-
+import sys
+import threading
+from connection import Player
 
 '''
 Function of the client:
@@ -29,41 +13,15 @@ Function of the client:
 - Indicate if a player wins
 '''
 
-# CONSTANTS
-HEADER = 64
-PORT = 8888
-FORMAT = "utf-8"
-DISCONNECT = "!DISCONNECT"
-SERVER = "192.168.89.1"
-ADDR = (SERVER, PORT)
-
-# initialising connection with server
-try:
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(ADDR)
-except TimeoutError:
-    print("Connection timeout")
-except ConnectionRefusedError:
-    print("Server is not running")
-
 # initialising game
 pygame.init()
 win = pygame.display.set_mode((1000, 900))
 font = pygame.font.SysFont("Lucida Sans Typewriter", 30)
 
-grid =[
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0]
-        ]
-player = 0
-res = send("Start")
-if res:
-    player = res
 
+player = Player()
+req = threading.Thread(target=lambda: player.request())
+req.start()
 # pygame mainloop
 while True:
 
@@ -71,19 +29,19 @@ while True:
 
     win.fill("black")
     col = game.cursor_to_column(mouse)
-    row = game.bottom(col, grid)
+    row = game.bottom(col, player.grid)
     game.column_marker(col)
-    game.counters(grid, (150, 200))
+    game.counters(player.grid, (150, 200))
     game.squares((150, 200), 100)
-    text = font.render(f"Player {player}", True, "White")
+    text = font.render(f"Player {player.id}", True, "White")
     win.blit(text, (150, 100))
     pygame.display.update()
 
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
-            if grid[0][col - 1] == 0:
-                grid[row][col - 1] = player
-                send("g"+str((row, col-1)))
-                #send("MOVE")
+            if player.grid[0][col - 1] == 0:
+                player.grid[row][col - 1] = int(player.id)
+                player.send(f"m{row}/{col-1}")
         if event.type == pygame.QUIT:
+            player.send("_disconnect")
             sys.exit()

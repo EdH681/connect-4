@@ -10,6 +10,10 @@ Function of the server:
 - Send the updated grid to both players
 - Send if there was a win + where the win was 
 - Alternate between which player is moving
+
+Protocol:
+_ is the prefix for a command
+some special cases have a different character for the first letter
 '''
 
 # =constants=
@@ -18,11 +22,13 @@ PORT = 8888
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
-DISCONNECT = "!DISCONNECT"
-CLOSE = "!CLOSE"
 PLAYERS = ["1", "2"]
 
 players = {}
+moves = {
+    "1": None,
+    "2": None
+}
 
 grid = [
     [0, 0, 0, 0, 0, 0, 0],
@@ -46,12 +52,13 @@ except OSError:
 
 
 def handle_client(conn, addr):
+    global grid
     print(f"\nNew connection: {addr}")
     connected = True
     while connected:
         msg = conn.recv(4096).decode()
 
-        if msg == "!start":
+        if msg == "_start":
             if len(PLAYERS) > 0:
                 player = PLAYERS[0]
                 players[addr] = PLAYERS[0]
@@ -61,15 +68,27 @@ def handle_client(conn, addr):
             else:
                 conn.send(str.encode("_full"))
 
-        elif msg == "!disconnect":
-            conn.send(str.encode("Disconnecting..."))
+        elif msg == "_disconnect":
+            conn.send(str.encode("_disconnected"))
             print(f"Player {players[addr]} disconnected")
             connected = False
             conn.close()
 
+        elif msg == "_request":
+            conn.send(str.encode("_received"))
+            data = moves[players[addr]]
+            if data is None:
+                conn.send(str.encode("_"))
+
+
+        elif msg[0] == "m":
+            move = msg[1:]
+            print(f"{players[addr]}: {move}")
+            conn.send(str.encode("_received"))
+
         else:
             print(f"Player {players[addr]}: {msg}")
-            conn.send(str.encode(f"Received"))
+            conn.send(str.encode("Received"))
 
     conn.close()
     print()
@@ -88,4 +107,3 @@ process = threading.Thread(target=start)
 
 print("Server starting...")
 process.start()
-print("isdfjbhdfj")
