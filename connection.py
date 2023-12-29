@@ -51,8 +51,12 @@ class Player:
             res = self.send("_request")
             if res == "_received":
                 move = self.client.recv(4096).decode()
-                if move != "_":
-                    print(move)
+                if move != "_" and move != "_received":
+                    move = move.split("/")
+                    row = int(move[0])
+                    col = int(move[1])
+                    player = int(move[2])
+                    self.grid[row][col] = player
 
 
 if __name__ == "__main__":

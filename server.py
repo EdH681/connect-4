@@ -76,14 +76,21 @@ def handle_client(conn, addr):
 
         elif msg == "_request":
             conn.send(str.encode("_received"))
-            data = moves[players[addr]]
-            if data is None:
+            player = players[addr]
+            send = str(2 - ((int(player) + 1) % 2))
+            data = moves[send]
+            if data:
+                conn.send(str.encode(f"{data}/{send}"))
+            else:
                 conn.send(str.encode("_"))
-
 
         elif msg[0] == "m":
             move = msg[1:]
             print(f"{players[addr]}: {move}")
+            moves[players[addr]] = move
+            print(moves)
+
+
             conn.send(str.encode("_received"))
 
         else:
