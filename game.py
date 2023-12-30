@@ -1,4 +1,4 @@
-import pygame
+
 from math import *
 
 
@@ -80,9 +80,7 @@ def checks(table):
                 return table[i][j]
 
 
-pygame.init()
-win = pygame.display.set_mode((1000, 900))
-font = pygame.font.SysFont("Lucida Sans Typewriter", 30)
+
 
 grid = [
     [0, 0, 0, 0, 0, 0, 0],
@@ -94,6 +92,10 @@ grid = [
 ]
 
 if __name__ == "__main__":
+    import pygame
+    pygame.init()
+    win = pygame.display.set_mode((1000, 900))
+    font = pygame.font.SysFont("Lucida Sans Typewriter", 30)
     running = True
     player = 0
 
