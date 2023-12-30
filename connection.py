@@ -50,17 +50,16 @@ class Player:
     def request(self):
         while True:
             res = self.send("_request")
-            if res == "_received":
-                move = self.client.recv(4096).decode()
+            if res[0] == "r":
+                move = res[1:]
                 move = move.split("/")
-                if move[0] != "_" and move != "_received":
+                print(move)
+                self.current = int(move[3])
+                if move[0] != "_":
                     row = int(move[0])
                     col = int(move[1])
                     player = int(move[2])
                     self.grid[row][col] = player
-                    self.current = int(move[3])
-                else:
-                    self.current = int(move[2])
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-
+import pygame
 from math import *
 
 
@@ -31,7 +31,7 @@ def cursor_to_column(mousePos):
 
 def column_marker(column):
     column = (150 + (100 * (column-1)))
-    pygame.draw.rect(win, (50, 50, 50), (column, 200, 100, 600))
+    pygame.draw.rect(win, (10, 10, 10), (column, 200, 100, 600))
 
 
 def bottom(column, table):
@@ -80,7 +80,9 @@ def checks(table):
                 return table[i][j]
 
 
-
+pygame.init()
+win = pygame.display.set_mode((1000, 900))
+font = pygame.font.SysFont("Lucida Sans Typewriter", 30)
 
 grid = [
     [0, 0, 0, 0, 0, 0, 0],
@@ -92,10 +94,6 @@ grid = [
 ]
 
 if __name__ == "__main__":
-    import pygame
-    pygame.init()
-    win = pygame.display.set_mode((1000, 900))
-    font = pygame.font.SysFont("Lucida Sans Typewriter", 30)
     running = True
     player = 0
 

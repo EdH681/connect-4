@@ -3,18 +3,30 @@ import sys
 import threading
 
 '''
-Function of the server:
-- Receive the current grid from the player who just played
-- Update the grid stored on the server
-- Check the grid for wins
-- Send the updated grid to both players
-- Send if there was a win + where the win was 
-- Alternate between which player is moving
+In order to send more complex data as a string, I created my own protocol which turns a list into a string with each
+index separated by '/'
 
-Protocol:
-_ is the prefix for a command
-some special cases have a different character for the first letter
+Command prefixes:
+_: general commands between the server and client
+m: sent by the player with move data
+r: sent by the server as a response do data requests
+
+Game data sent by server:
+Index   Data
+0       row
+1       column
+2       player
+3       current player  
+4       did someone win?
+5       row start for win
+6       column start for win
+7       row end for win
+8       column end for win
+9       winner
+
+
 '''
+
 
 # =constants=
 HEADER = 64
@@ -69,24 +81,28 @@ def handle_client(conn, addr):
             else:
                 conn.send(str.encode("_full"))
 
+        # if the client disconnects
         elif msg == "_disconnect":
             conn.send(str.encode("_disconnected"))
             print(f"Player {players[addr]} disconnected")
             connected = False
             conn.close()
 
+        # if the client requests game data
         elif msg == "_request":
-            conn.send(str.encode("_received"))
             player = players[addr]
             send = str(2 - ((int(player) + 1) % 2))
             data = moves[send]
             if data:
-                conn.send(str.encode(f"{data}/{send}/{str(turn)}"))
+                conn.send(str.encode(f"r{data}/{send}/{str(turn)}"))
             else:
-                conn.send(str.encode(f"_/_/{str(turn)}"))
+                conn.send(str.encode(f"r_/_/_/{str(turn)}"))
 
+        # if the client submits move data
         elif msg[0] == "m":
             move = msg[1:]
+            if len(move) > 3:
+                move = move[:3]
             print(f"{players[addr]}: {move}")
             moves[players[addr]] = move
             print(moves)

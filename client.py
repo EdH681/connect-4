@@ -4,27 +4,18 @@ import sys
 import threading
 from connection import Player
 
-'''
-Function of the client:
-- Run the graphics of the game
-- Take the input of each player
-- Send the most recent move of the player
-- Receive the result of the round
-- Indicate if a player wins
-'''
-
 # initialising game
 pygame.init()
 win = pygame.display.set_mode((1000, 900))
 title = pygame.font.SysFont("Lucida Sans Typewriter", 30)
 sub = pygame.font.SysFont("Lucida Sans Typewriter", 25)
 
-
+# starting player class and requests
 player = Player()
 req = threading.Thread(target=lambda: player.request())
 req.start()
 
-# pygame mainloop
+# mainloop
 while True:
 
     mouse = pygame.mouse.get_pos()
@@ -48,7 +39,6 @@ while True:
 
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
-            print(player.current)
             if player.current == player.id:
                 if player.grid[0][col - 1] == 0:
                     player.grid[row][col - 1] = player.id
