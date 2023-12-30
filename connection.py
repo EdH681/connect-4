@@ -15,7 +15,8 @@ class Player:
         self.server = "192.168.1.11"
         self.port = 8888
         self.addr = (self.server, self.port)
-        self.id = self.connect()
+        self.id = int(self.connect())
+        self.current = 1
         self.grid = [
             [0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0],
@@ -51,12 +52,15 @@ class Player:
             res = self.send("_request")
             if res == "_received":
                 move = self.client.recv(4096).decode()
-                if move != "_" and move != "_received":
-                    move = move.split("/")
+                move = move.split("/")
+                if move[0] != "_" and move != "_received":
                     row = int(move[0])
                     col = int(move[1])
                     player = int(move[2])
                     self.grid[row][col] = player
+                    self.current = int(move[3])
+                else:
+                    self.current = int(move[2])
 
 
 if __name__ == "__main__":

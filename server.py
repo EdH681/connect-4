@@ -24,6 +24,7 @@ ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 PLAYERS = ["1", "2"]
 
+turn = 1
 players = {}
 moves = {
     "1": None,
@@ -52,7 +53,7 @@ except OSError:
 
 
 def handle_client(conn, addr):
-    global grid
+    global grid, turn
     print(f"\nNew connection: {addr}")
     connected = True
     while connected:
@@ -80,15 +81,17 @@ def handle_client(conn, addr):
             send = str(2 - ((int(player) + 1) % 2))
             data = moves[send]
             if data:
-                conn.send(str.encode(f"{data}/{send}"))
+                conn.send(str.encode(f"{data}/{send}/{str(turn)}"))
             else:
-                conn.send(str.encode("_"))
+                conn.send(str.encode(f"_/_/{str(turn)}"))
 
         elif msg[0] == "m":
             move = msg[1:]
             print(f"{players[addr]}: {move}")
             moves[players[addr]] = move
             print(moves)
+            turn = 2 - ((turn + 1) % 2)
+            print(f"Player {turn}'s turn")
 
 
             conn.send(str.encode("_received"))

@@ -31,7 +31,7 @@ def cursor_to_column(mousePos):
 
 def column_marker(column):
     column = (150 + (100 * (column-1)))
-    pygame.draw.rect(win, (10, 10, 10), (column, 200, 100, 600))
+    pygame.draw.rect(win, (50, 50, 50), (column, 200, 100, 600))
 
 
 def bottom(column, table):
