@@ -109,7 +109,7 @@ if __name__ == "__main__":
         squares((150, 200), 100)
         text = font.render(f"Player {player + 1}", True, "white")
 
-        if not checks(grid) is None:
+        if  checks(grid):
             text = font.render(f"Player {checks(grid)} wins", True, "white")
             restart = font.render("Press 'r' to restart", True, "white")
             win.blit(restart, (150, 150))

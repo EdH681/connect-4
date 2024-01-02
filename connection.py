@@ -18,6 +18,7 @@ class Player:
         self.addr = (self.server, self.port)
         self.id = int(self.connect())
         self.current = 1
+        self.winner = None
         self.grid = [
             [0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0],
@@ -54,13 +55,21 @@ class Player:
             if res[0] == "r":
                 move = res[1:]
                 move = move.split("/")
-                print(move)
                 self.current = int(move[3])
                 if move[0] != "_":
                     row = int(move[0])
                     col = int(move[1])
                     player = int(move[2])
                     self.grid[row][col] = player
+
+                if move[4] != "_":
+                    winner = move[4]
+                    row1 = move[5]
+                    col1 = move[6]
+                    row2 = move[7]
+                    col2 = move[8]
+                    self.winner = [winner, row1, col1, row2, col2]
+
             time.sleep(0.001)
 
 
