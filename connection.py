@@ -1,6 +1,7 @@
 import socket
 import sys
 import threading
+import time
 
 '''
 Function of connection
@@ -12,7 +13,7 @@ Function of connection
 class Player:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "192.168.1.11"
+        self.server = "192.168.89.1"
         self.port = 8888
         self.addr = (self.server, self.port)
         self.id = int(self.connect())
@@ -60,6 +61,7 @@ class Player:
                     col = int(move[1])
                     player = int(move[2])
                     self.grid[row][col] = player
+            time.sleep(0.001)
 
 
 if __name__ == "__main__":
