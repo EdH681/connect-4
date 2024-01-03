@@ -44,21 +44,22 @@ while True:
             win.blit(winAnnounce, (150, 100))
         else:
             winAnnounce = announcement.render(f"Player {player.winner[0]} wins", True, "white")
+            win.blit(winAnnounce, (150, 100))
 
         row1 = int(player.winner[1])
+        row1 = (((row1 + 1) * 100) + 150)
         col1 = int(player.winner[2])
-
+        col1 = ((col1 * 100) + 200)
 
         row2 = int(player.winner[3])
+        row2 = (((row2 + 1) * 100) + 150)
         col2 = int(player.winner[4])
-
+        col2 = ((col2 * 100) + 200)
 
         start = (col1, row1)
         end = (col2, row2)
 
         pygame.draw.line(win, "Yellow", start, end, 10)
-
-
 
     pygame.display.update()
 

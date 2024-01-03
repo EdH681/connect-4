@@ -13,7 +13,7 @@ Function of connection
 class Player:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "192.168.89.1"
+        self.server = "172.20.10.9"
         self.port = 8888
         self.addr = (self.server, self.port)
         self.id = int(self.connect())
@@ -38,8 +38,8 @@ class Player:
                 sys.exit()
             else:
                 return res
-        except Exception as e:
-            print(e)
+        except WindowsError:
+            print("Request timed out or blocked")
             sys.exit()
 
     def send(self, data):
