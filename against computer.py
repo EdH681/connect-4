@@ -1,6 +1,7 @@
 import pygame
 from math import *
 import random
+import threading
 
 
 def display(table):
@@ -91,7 +92,7 @@ def checks(table):
 class AI:
     def __init__(self):
         self.playerMoves = []
-        self.move = 0
+        self.moves = 0
         self.colWeight = [2, 5, 10, 17, 10, 5, 2]
         self.columns = [0, 1, 2, 3, 4, 5, 6]
         self.blocks = []
@@ -102,7 +103,6 @@ class AI:
             for c in range(len(grid[r])):
                 if grid[r][c] == 1 and (c, r) not in self.playerMoves:
                     self.playerMoves.append((c, r))
-                    print(f"New move at {c, r}")
 
     @staticmethod
     def horizontal(table):
@@ -110,7 +110,6 @@ class AI:
         for i in range(len(table)):
             for j in range(len(table[i]) - 2):
                 if table[i][j] == table[i][j + 1] == table[i][j + 2] and table[i][j] != 0:
-                    print(f"Three in a row starting at {i, j}")
 
                     if j > 0:
                         if table[i][j - 1] == 0:
@@ -118,34 +117,76 @@ class AI:
                     if j < 6:
                         if table[i][j + 3] == 0:
                             openings.append((i, j + 3))
-        print(openings)
         return openings
 
+    @staticmethod
+    def vertical(table):
+        openings = []
+        for i in range(len(table) - 2):
+            for j in range(len(table[i])):
+                if table[i][j] == table[i + 1][j] == table[i + 2][j] and table[i][j] != 0:
+                    if i > 0:
+                        openings.append((i + 3, j))
+        return openings
+
+    @staticmethod
+    def diagonal_up(table):
+        openings = []
+        for i in range(2, len(table)):
+            for j in range(len(table[i]) - 3):
+                if table[i][j] == table[i - 1][j + 1] == table[i - 2][j + 2] and table[i][j] != 0:
+                    if j > 0 and i < 6:
+                        openings.append((i-3, j+3))
+                    if j < 6 and i > 0:
+                        openings.append((i+1, j-1))
+        return openings
+
+    @staticmethod
+    def diagonal_down(table):
+        openings = []
+        for i in range(len(table) - 3):
+            for j in range(len(table[i]) - 3):
+                if table[i][j] == table[i + 1][j + 1] == table[i + 2][j + 2] and table[i][j] != 0:
+                    if i < 3 and j < 4:
+                        openings.append((i+3, j+3))
+
+
+    def update_open(self, data):
+        if data:
+            for o in data:
+                if o not in self.blocks:
+                    print(f"Opening at: {o}")
+                    self.blocks.append(o)
+
     def three_checks(self):
+        # horizontal check
         horizontal_open = self.horizontal(grid)
-        if horizontal_open:
-            for o in horizontal_open:
-                self.blocks.append(o)
-        if self.blocks:
-            print("Potential blocks at:")
-            print(self.blocks)
-        else:
-            print("No openings")
+        self.update_open(horizontal_open)
+        # vertical check
+        vertical_open = self.vertical(grid)
+        self.update_open(vertical_open)
+        # diagonal up check
+        h_up_open = self.diagonal_up(grid)
+        self.update_open(h_up_open)
 
     def play(self):
-        if self.move == 0:
+        if self.moves == 0:
             column = int(random.choices(self.columns, weights=self.colWeight)[0])
             if grid[5][column] == 0:
                 grid[5][column] = 2
             else:
                 grid[4][column] = 2
 
-        self.move += 1
+        self.moves += 1
 
     def run(self):
-        self.grid_check()
-        self.three_checks()
-        self.play()
+        global player
+        while True:
+            self.grid_check()
+            self.three_checks()
+            if player == 2:
+                player = 1
+                # self.play()
 
 
 pygame.init()
@@ -155,9 +196,9 @@ font = pygame.font.SysFont("Lucida Sans Typewriter", 30)
 grid = [
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0],
     [0, 0, 0, 0, 0, 0, 0]
 ]
 
@@ -166,6 +207,8 @@ player = 1
 clickable = True
 
 bot = AI()
+ai = threading.Thread(target=bot.run)
+ai.start()
 
 while running:
     win.fill("black")
@@ -180,17 +223,10 @@ while running:
             if grid[0][col - 1] == 0:
                 grid[row][col - 1] = player
                 player = 2
-                print()
-                display(grid)
-                print()
                 clickable = False
                 continue
         if not pygame.mouse.get_pressed()[0]:
             clickable = True
-
-    if player == 2:
-        bot.run()
-        player = 1
 
     squares((150, 200), 100)
     counters(grid, (150, 200))
